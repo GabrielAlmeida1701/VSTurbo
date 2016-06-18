@@ -7,7 +7,7 @@ public class Main : MonoBehaviour {
 	// Use this for initialization
 	void Start ()
     {
-        Graph graph = new Graph(4);
+        Graph graph = new Graph(18);
 
         graph.Initialize();
 	}

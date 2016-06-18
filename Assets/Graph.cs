@@ -54,7 +54,7 @@ namespace Assets
             Debug.Log("initializing graph...");
 
             GenGraph();
-            ShowMatriz();
+            WriteAllInAFile();
         }
 
         private Node createNode(int id)
@@ -95,25 +95,43 @@ namespace Assets
             {
                 for(int j = 0; j < nodesSize; j++)
                 {
-                    if(matrizAdj[i,j] != 0)
+                    if(matrizAdj[i,j] == 1)
                     {
                         Edge edge = new Edge();
-                        edge.adjacent = listNodes[j];
+                        edge.adjacent = listNodes[i];
                         edge.weight = Random.Range(5, 10);
                         ROAD_TYPE rtype = (ROAD_TYPE)Random.Range((int)ROAD_TYPE.ASPHALT_GOOD, (int)ROAD_TYPE.BRIDGE);
                         edge.road_type = rtype;
+
+                        listNodes[j].adjacents.Add(edge);
                     }
                 }
             }
         }
 
-        private void ShowMatriz()
+        private void WriteAllInAFile()
         {
-            for (int i = 0; i < nodesSize; i++)
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\Users\amils\Desktop\ResultGraph.txt"))
             {
-                for (int j = 0; j < nodesSize; j++)
+                for (int i = 0; i < nodesSize; i++)
                 {
-                    Debug.Log(matrizAdj[i,j]);
+                    file.WriteLine();
+                    for (int j = 0; j < nodesSize; j++)
+                    {
+                        file.Write(" {0}", matrizAdj[i,j]);
+                    }
+                }
+
+                file.WriteLine();
+
+                for (int i = 0; i < listNodes.Count; i++)
+                {
+                    file.Write("Vertice[{0}] => ", listNodes[i].id);
+                    for (int j = 0; j < listNodes[i].adjacents.Count; j++)
+                    {
+                        file.Write(" " + listNodes[i].adjacents[j].adjacent.id);
+                    }
+                    file.WriteLine();
                 }
             }
         }
