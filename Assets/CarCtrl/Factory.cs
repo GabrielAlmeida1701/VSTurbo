@@ -38,16 +38,17 @@ public class Factory : MonoBehaviour {
 	void SetBnts(){
 		Transform go = GameObject.Find ("Map").transform;
 		for (int i = 0; i < go.childCount; i++) {
-			go.GetChild (i).GetComponent<Button> ().onClick.AddListener (() => {
-				AddToPath(go.GetChild(i));
+            Transform tr = go.GetChild(i);
+            go.GetChild (i).GetComponent<Button> ().onClick.AddListener (() => {
+				AddToPath(tr);
 			});
 		}
 	}
 
 	void AddToPath(Transform pnt){
-		//if regras do grafo
-		print("add "+pnt.name);
-		selectedPath.Add (pnt);
+        //if regras do grafo
+        if (!selectedPath.Contains(pnt))
+            selectedPath.Add(pnt);
 	}
 
 	private void DEVELOP_ONLY(){
@@ -58,9 +59,16 @@ public class Factory : MonoBehaviour {
 
 	public void ConfirmPath(){
 		if (selectedPath.Contains (objective.transform) && carsList[selectedCar].free) {
-			carsList [selectedCar].path = selectedPath;
+            carsList[selectedCar].forward = true;
+            carsList[selectedCar].free = false;
+            CloneList();
 			selectedPath.Clear ();
 		} else
 			print ("selecione o caminho até o objetivo final");
 	}
+
+    private void CloneList() {
+        for (int i = 0; i < selectedPath.Count; i++)
+            carsList[selectedCar].path.Add(selectedPath[i]);
+    }
 }

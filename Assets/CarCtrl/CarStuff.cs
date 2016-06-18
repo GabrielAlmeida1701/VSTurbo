@@ -10,20 +10,61 @@ public class CarStuff : MonoBehaviour {
 	public float speed;
 
 	public bool free;
+    public bool forward;
 
-	private int crrPnt;
+    private int crrPnt;
+    private float waitTime;
+
 	void Update(){
-		if (!free) {
-			transform.Translate (0, 0, speed * Time.deltaTime);
-			GasTank -= 0.05f;
-			transform.LookAt (path [crrPnt]);
+        if(path.Count != 0) {
+		    if (!free) {
+                if (forward)
+                    GoForward();
+                else
+                    GoBack();
+		    } else {
+                if (crrPnt >= path.Count) {
+                    waitTime += Time.deltaTime;
+                    if(waitTime >= 5) {
+                        forward = false;
+                        free = false;
+                        crrPnt--;
+                        waitTime = 0;
+                    }
+                }
+            }
+        }
 
-			if (Vector3.Distance (transform.position, path [crrPnt].position) < 1f) {
-				if (crrPnt >= path.Count)
-					free = true;
-				else
-					crrPnt++;
-			}
-		}
 	}
+
+    void GoForward() {
+        if (crrPnt >= path.Count) {
+            free = true;
+            print("Delivery");
+
+            return;
+        }
+
+        transform.Translate (0, 0, speed * Time.deltaTime);
+		transform.LookAt (path [crrPnt]);
+
+        if (Vector3.Distance(transform.position, path[crrPnt].position) < 1f)
+            crrPnt++;
+    }
+
+    void GoBack() {
+        if (crrPnt < 0) {
+            free = true;
+            path.Clear();
+            print("BackToBase");
+
+            return;
+        }
+
+        transform.Translate (0, 0, speed * Time.deltaTime);
+		transform.LookAt (path [crrPnt]);
+
+        if (Vector3.Distance(transform.position, path[crrPnt].position) < 1f)
+            crrPnt--;
+    }
 }
