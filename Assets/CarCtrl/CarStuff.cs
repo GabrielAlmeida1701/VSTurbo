@@ -14,6 +14,7 @@ public class CarStuff : MonoBehaviour {
 
     private int crrPnt;
     private float waitTime;
+    private Factory factory;
 
 	void Update(){
         if(path.Count != 0) {
@@ -66,5 +67,10 @@ public class CarStuff : MonoBehaviour {
 
         if (Vector3.Distance(transform.position, path[crrPnt].position) < 1f)
             crrPnt--;
+    }
+
+    public CarStuff SetFactory(Factory factory) {
+        this.factory = factory;
+        return this;
     }
 }

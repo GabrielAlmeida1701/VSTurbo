@@ -13,7 +13,9 @@ public class Factory : MonoBehaviour {
 	public int selectedCar;
 	public GameObject bnt;
     public Graph graph;
-    
+
+    public float totalMoney;
+    public float totalXP;
 
 	void Start(){
 		//carrega quantidade de carros na lista
@@ -51,7 +53,18 @@ public class Factory : MonoBehaviour {
 	}
 
 	void AddToPath(Transform pnt){
-        //if regras do grafo
+        int id = lastSelected();
+        if (id != -1) {
+            
+            int str = pnt.name.IndexOf("(");
+            int end = pnt.name.IndexOf(")");
+            string index = pnt.name.Substring(str).Replace("(", "").Replace(")", "");
+            int next = int.Parse(index);
+            /*foreach(Edge ed in edges) {
+                print(ed.adjacent.id);
+            }*/
+        }
+
         if (!selectedPath.Contains(pnt))
             selectedPath.Add(pnt);
 	}
@@ -59,7 +72,7 @@ public class Factory : MonoBehaviour {
 	private void DEVELOP_ONLY(){
 		GameObject[] cars = GameObject.FindGameObjectsWithTag ("Player");
 		for (int i = 0; i < cars.Length; i++)
-			carsList.Add (cars [i].GetComponent<CarStuff> ());
+			carsList.Add (cars [i].GetComponent<CarStuff> ().SetFactory(this));
 	}
 
 	public void ConfirmPath(){
@@ -75,5 +88,19 @@ public class Factory : MonoBehaviour {
     private void CloneList() {
         for (int i = 0; i < selectedPath.Count; i++)
             carsList[selectedCar].path.Add(selectedPath[i]);
+    }
+
+    private int lastSelected() {
+        if (selectedPath.Count - 1 == -1)
+            return -1;
+
+        Transform tr = selectedPath[selectedPath.Count - 1];
+        Transform go = GameObject.Find ("Map").transform;
+        for (int i = 0; i < go.childCount; i++) {
+            if (go.GetChild(i) == tr)
+                return i;
+        }
+
+        return -1;
     }
 }

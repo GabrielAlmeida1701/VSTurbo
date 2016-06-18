@@ -6,7 +6,7 @@ public class MainGraph : MonoBehaviour {
 
     public Graph InitializeGraph ()
     {
-        Graph graph = new Graph(4);
+        Graph graph = new Graph(18);
 
         graph.Initialize();
 
