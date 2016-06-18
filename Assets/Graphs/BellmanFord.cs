@@ -2,41 +2,36 @@
 using System.Collections;
 using Assets;
 
-public class BellmanFord : MonoBehaviour { 
-    public static void Call_BellmanFord(Graph graph, int source, int destiny)
+public class BellmanFord : MonoBehaviour
+{
+    public static void RunBellmanFord(Graph graph, int source)
     {
-        int listNodes = graph.listNodes.Count;
-        int listEdges = graph.listEdges.Count;
-        int[] distance = new int[listNodes];
-    
-    
-        for (int i = 0; i < listNodes; i++)
+        int listNodesSize = graph.listNodes.Count;
+        var listAdj = graph.listNodes;
+
+        int[] distance = new int[listNodesSize];
+
+
+        for (int i = 0; i < listNodesSize; i++)
             distance[i] = int.MaxValue;
-    
+
         distance[source] = 0;
-    
-        for (int i = 1; i <= listNodes - 1; ++i)
+
+        for (int i = 1; i <= listNodesSize - 1; ++i)
         {
-            for (int j = 0; j < listEdges; ++j)
+            for (int j = 0; j < listNodesSize; ++j)
             {
-                int u = 1;// graph.listEdges[j].Source; 
-                int v = 0;// graph.listEdges[i].Destination;
-                int weight = graph.listEdges[j].weight;
-    
-                if (distance[u] != int.MaxValue && distance[u] + weight < distance[v])
-                    distance[v] = distance[u] + weight;
+                for (int k = 0; k < listAdj[j].adjacents.Count; k++)
+                {
+                    int u = listAdj[j].id;
+                    int v = listAdj[j].adjacents[k].adjacent.id;
+                    int weight = listAdj[j].adjacents[k].weight;
+
+                    if (distance[u] != int.MaxValue && distance[u] + weight < distance[v])
+                        distance[v] = distance[u] + weight;
+                }
             }
         }
-    
-        for (int i = 0; i < listEdges; ++i)
-        {
-            int u = 1;// graph.listEdges[i].Source;
-            int v = 0;// graph.listEdges[i].Destination;
-            int weight = graph.listEdges[i].weight;
-    
-            if (distance[u] != int.MaxValue && distance[u] + weight < distance[v]);
-                //Console.WriteLine("Graph contains negative weight cycle.");
-        }
     }
-    
+
 }
