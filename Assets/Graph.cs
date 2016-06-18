@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -36,15 +36,13 @@ namespace Assets
     public class Graph
     {
         public List<Node> listNodes; //"cidades"
-        public List<Edge> listEdges;
         int[,] matrizAdj;
         int nodesSize;
-        
+
         public Graph(int size)
         {
             nodesSize = size;
             matrizAdj = new int[size, size];
-            listEdges = new List<Edge>();
             listNodes = new List<Node>();
         }
 
@@ -103,7 +101,6 @@ namespace Assets
                         edge.weight = Random.Range(5, 10);
                         ROAD_TYPE rtype = (ROAD_TYPE)Random.Range((int)ROAD_TYPE.ASPHALT_GOOD, (int)ROAD_TYPE.BRIDGE);
                         edge.road_type = rtype;
-                        listEdges.Add (edge);
                     }
                 }
             }

@@ -3,7 +3,7 @@ using System.Collections;
 using Assets;
 
 public class BellmanFord : MonoBehaviour { 
-        public static void BellmanFordi(Graph graph, int source)
+        public static void BellmanFord(Graph graph, int source)
     {
         int listNodes = graph.listNodes.Count;
         int listEdges = graph.listEdges.Count;
