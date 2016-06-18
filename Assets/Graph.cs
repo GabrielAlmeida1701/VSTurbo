@@ -36,6 +36,8 @@ namespace Assets
     public class Graph
     {
         public List<Node> listNodes; //"cidades"
+        public List<Edge> listEdges;
+
         int[,] matrizAdj;
         int nodesSize;
 
@@ -101,6 +103,8 @@ namespace Assets
                         edge.weight = Random.Range(5, 10);
                         ROAD_TYPE rtype = (ROAD_TYPE)Random.Range((int)ROAD_TYPE.ASPHALT_GOOD, (int)ROAD_TYPE.BRIDGE);
                         edge.road_type = rtype;
+
+                        listEdges.Add(edge);
                     }
                 }
             }
