@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using Assets;
 
 public class Factory : MonoBehaviour {
 
@@ -11,10 +12,14 @@ public class Factory : MonoBehaviour {
 
 	public int selectedCar;
 	public GameObject bnt;
+    public Graph graph;
+    
 
 	void Start(){
 		//carrega quantidade de carros na lista
 		DEVELOP_ONLY();
+
+        graph = GetComponent<MainGraph>().InitializeGraph();
 
 		int qnt = carsList.Count;
 		GameObject originalPos = GameObject.Find ("BntsPosition");
