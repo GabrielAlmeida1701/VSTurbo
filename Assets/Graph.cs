@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -111,7 +111,8 @@ namespace Assets
 
         private void WriteAllInAFile()
         {
-            using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\Users\amils\Desktop\ResultGraph.txt"))
+			//using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\Users\andrey\Desktop\ResultGraph.txt"))
+			using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\Users\amils\Desktop\ResultGraph.txt"))
             {
                 for (int i = 0; i < nodesSize; i++)
                 {
@@ -124,12 +125,15 @@ namespace Assets
 
                 file.WriteLine();
 
-                for (int i = 0; i < listNodes.Count; i++)
+                for (int i = 0; i < 1; i++)
                 {
-                    file.Write("Vertice[{0}] => ", listNodes[i].id);
+					file.WriteLine ();
                     for (int j = 0; j < listNodes[i].adjacents.Count; j++)
+						//(id_vert road_t weight)
                     {
-                        file.Write(" " + listNodes[i].adjacents[j].adjacent.id);
+                        file.Write("(" + listNodes[i].adjacents[j].adjacent.id + " ");
+						file.Write ((int)listNodes [i].adjacents [j].road_type + " ");
+						file.Write (listNodes [i].adjacents [j].weight + ")");
                     }
                     file.WriteLine();
                 }
@@ -139,7 +143,6 @@ namespace Assets
         public List<Edge> GetAdjacents(int id)
         {
             Node item = listNodes.Find(x => x.id == id);
-
             return item.adjacents;
         }
 
