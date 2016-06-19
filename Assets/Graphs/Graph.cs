@@ -37,25 +37,18 @@ namespace Assets
     public class Graph
     {
         public List<Node> listNodes; //"cidades"
-
-        //int[,] matrizAdj;
+		
         public int nodesSize;
 
         public Graph(int size)
         {
             nodesSize = size;
-            //matrizAdj = new int[size, size];
             listNodes = new List<Node>();
         }
 
         public void Initialize()
         {
-            //Criar cada vertice.
-            //Definir os adjacentes de cada vertice e o tipo da aresta.
-            Debug.Log("initializing graph...");
-
             GenGraph();
-            WriteAllInAFile();
         }
 
         private Node createNode(int id)
@@ -190,47 +183,6 @@ namespace Assets
             edge.road_type = rType;
 
             listNodes[D].adjacents.Add(edge);
-        }
-
-        private void TransformToList()
-        {
-            //for(int i = 0; i < nodesSize; i++)
-            //{
-            //    listNodes.Add(createNode(i));
-            //}
-
-
-            //for (int i = 0; i < nodesSize; i++)
-            //{
-            //    for (int j = 0; j < nodesSize; j++)
-            //    {
-            //        if (matrizAdj[i, j] == 1)
-            //        {
-            //            if (listNodes[j].adjacents.Count < 5)
-            //            {
-            //                AddEdge(i, j);
-            //            }
-            //        }
-            //    }
-            //}
-        }
-
-        //Apenas para teste
-        private void WriteAllInAFile()
-        {
-			//using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\Users\andrey\Desktop\ResultGraph.txt"))
-			using (System.IO.StreamWriter file = new System.IO.StreamWriter(Application.dataPath+"/ResultGraph.txt"))
-            {
-                for (int i = 0; i < listNodes.Count; i++)
-                {
-					file.Write("Vertice[{0}] => ", listNodes[i].id);
-                    for (int j = 0; j < listNodes[i].adjacents.Count; j++)
-                    {
-                        file.Write(" " + listNodes[i].adjacents[j].adjacent.id);
-                    }
-                    file.WriteLine();
-                }
-            }
         }
 
         public bool IsAdjacent(int id, int next)
