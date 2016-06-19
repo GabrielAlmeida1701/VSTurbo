@@ -30,6 +30,7 @@ namespace Assets
         public Node()
         {
             adjacents = new List<Edge>();
+            time = 5 + Random.value * 10;
         }
     }
 

@@ -29,8 +29,7 @@ public class Factory : MonoBehaviour {
     }
 
     void Start(){
-		//carrega quantidade de carros na lista
-		DEVELOP_ONLY();
+		SetCarsList();
 
         graph = GetComponent<MainGraph>().InitializeGraph();
 
@@ -97,7 +96,7 @@ public class Factory : MonoBehaviour {
             selectedPath.Add(pnt);
 	}
 
-	private void DEVELOP_ONLY(){
+	private void SetCarsList(){
 		GameObject[] cars = GameObject.FindGameObjectsWithTag ("Player");
 		for (int i = 0; i < cars.Length; i++)
 			carsList.Add (cars [i].GetComponent<CarStuff> ().SetFactory(this));
@@ -115,7 +114,8 @@ public class Factory : MonoBehaviour {
 
     public void TakeJob() {
         print("Job Started");
-        selectedPath.Add(frstCity);
+        if(!selectedPath.Contains(frstCity))
+            selectedPath.Add(frstCity);
 
         int indx = Random.Range(0, 18);
         while(indx == PlayerPrefs.GetInt("InitialCity"))
@@ -136,6 +136,13 @@ public class Factory : MonoBehaviour {
     public void FinishJob() {
         print("End of Job");
         selectedPath.Add(frstCity);
+
+        Transform go = GameObject.Find("Map").transform;
+        for (int i = 0; i < graph.nodesSize; i++)
+            go.GetChild(i).GetComponent<Image>().sprite = normal;
+
+        totalMoney += Random.value * 2500;
+        totalXP += Random.Range(100, 200);
 
         objective = null;
     }

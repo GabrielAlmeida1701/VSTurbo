@@ -6,7 +6,7 @@ public class CarStuff : MonoBehaviour {
 	public List<Transform> path = new List<Transform>();
 
 	public float GasTank;
-	public float mass;
+	public float timeSpent;
 	public float speed;
 
 	public bool free;
@@ -55,8 +55,24 @@ public class CarStuff : MonoBehaviour {
         transform.Translate (0, 0, speed * Time.deltaTime);
 		transform.LookAt (path [crrPnt]);
 
-        if (Vector3.Distance(transform.position, path[crrPnt].position) < 1f)
+        if (Vector3.Distance(transform.position, path[crrPnt].position) < 1f) {
+            int id = getIndexCity(path[crrPnt]);
+            timeSpent += factory.graph.listNodes[id].time;
+            print(factory.graph.listNodes[id].time);
             crrPnt++;
+        }
+    }
+
+    private int getIndexCity(Transform pnt) {
+        string index = "";
+        if (pnt.name.IndexOf("(") != -1) {
+            int str = pnt.name.IndexOf("(");
+            int end = pnt.name.IndexOf(")");
+            index = pnt.name.Substring(str).Replace("(", "").Replace(")", "");
+        } else
+            index = "0";
+
+        return int.Parse(index);
     }
 
     void GoBack() {
@@ -64,6 +80,7 @@ public class CarStuff : MonoBehaviour {
             free = true;
             path.Clear();
             factory.FinishJob();
+            crrPnt = 0;
 
             return;
         }
@@ -71,8 +88,12 @@ public class CarStuff : MonoBehaviour {
         transform.Translate (0, 0, speed * Time.deltaTime);
 		transform.LookAt (path [crrPnt]);
 
-        if (Vector3.Distance(transform.position, path[crrPnt].position) < 1f)
+        if (Vector3.Distance(transform.position, path[crrPnt].position) < 1f) {
+            int id = getIndexCity(path[crrPnt]);
+            timeSpent += factory.graph.listNodes[id].time;
+            print(factory.graph.listNodes[id].time);
             crrPnt--;
+        }
     }
 
     public CarStuff SetFactory(Factory factory) {
