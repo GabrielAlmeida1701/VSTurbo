@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/GraphCore.unity
+- path: Assets/Scenes/CarCtrl_TstScene.unity
   isLoaded: 1
   isActive: 1

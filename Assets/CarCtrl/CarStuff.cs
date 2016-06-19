@@ -16,6 +16,12 @@ public class CarStuff : MonoBehaviour {
     private float waitTime;
     private Factory factory;
 
+    void Start() {
+        int indx = PlayerPrefs.GetInt("InitialCity");
+        Transform go = GameObject.Find("Map").transform;
+        transform.position = go.GetChild(indx).position;
+    }
+
 	void Update(){
         if(path.Count != 0) {
 		    if (!free) {
@@ -57,7 +63,7 @@ public class CarStuff : MonoBehaviour {
         if (crrPnt < 0) {
             free = true;
             path.Clear();
-            print("BackToBase");
+            factory.FinishJob();
 
             return;
         }
