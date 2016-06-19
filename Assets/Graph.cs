@@ -84,6 +84,17 @@ namespace Assets
             TransformToList();
         }
 
+        public void AddEdge(int S, int D)
+        {
+            Edge edge = new Edge();
+            edge.adjacent = listNodes[S];
+            edge.weight = Random.Range(5, 10);
+            ROAD_TYPE rtype = (ROAD_TYPE)Random.Range((int)ROAD_TYPE.ASPHALT_GOOD, (int)ROAD_TYPE.BRIDGE);
+            edge.road_type = rtype;
+
+            listNodes[D].adjacents.Add(edge);
+        }
+
         private void TransformToList()
         {
             for(int i = 0; i < nodesSize; i++)
@@ -91,19 +102,17 @@ namespace Assets
                 listNodes.Add(createNode(i));
             }
 
-            for(int i = 0; i < nodesSize; i++)
-            {
-                for(int j = 0; j < nodesSize; j++)
-                {
-                    if(matrizAdj[i,j] == 1)
-                    {
-                        Edge edge = new Edge();
-                        edge.adjacent = listNodes[i];
-                        edge.weight = Random.Range(5, 10);
-                        ROAD_TYPE rtype = (ROAD_TYPE)Random.Range((int)ROAD_TYPE.ASPHALT_GOOD, (int)ROAD_TYPE.BRIDGE);
-                        edge.road_type = rtype;
 
-                        listNodes[j].adjacents.Add(edge);
+            for (int i = 0; i < nodesSize; i++)
+            {
+                for (int j = 0; j < nodesSize; j++)
+                {
+                    if (matrizAdj[i, j] == 1)
+                    {
+                        if (listNodes[j].adjacents.Count < 5)
+                        {
+                            AddEdge(i, j);
+                        }
                     }
                 }
             }
@@ -145,14 +154,5 @@ namespace Assets
             Node item = listNodes.Find(x => x.id == id);
             return item.adjacents;
         }
-
-        /*
-            NOTA:
-            
-            VERIFICAR SE REALMENTE A PARTIR DE QUALQUER VERTICE, POSSA CHEGAR EM QUALQUER OUTRO VERTICE.
-            SE NAO PUDER, TEMOS UM ERRO PARA RESOLVER.
-             
-            FAZER UMA FUNÇÃO BELLMAN FORD PARA VERIFICAR O MENOR CAMINHO E RETORNAR OS VERTICES DO CAMINHO.
-        */
     }
 }
