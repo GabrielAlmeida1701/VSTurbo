@@ -185,13 +185,15 @@ namespace Assets
             listNodes[D].adjacents.Add(edge);
         }
 
-        public bool IsAdjacent(int id, int next)
+        public int IsAdjacent(int id, int next)
         {
-            foreach (Edge ed in listNodes[id].adjacents)
+            for (int i = 0; i < listNodes[id].adjacents.Count; i++) {
+                Edge ed = listNodes[id].adjacents[i];
                 if (ed.adjacent.id == next)
-                    return true;
+                    return i;
+            }
 
-            return false;
+            return -1;
         }
 
         public List<Edge> GetAdjacents(int id)

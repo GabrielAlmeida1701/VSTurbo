@@ -13,6 +13,7 @@ public class CarStuff : MonoBehaviour {
     public bool forward;
 
     private int crrPnt;
+    private int streetPnt;
     private float waitTime;
     private Factory factory;
 
@@ -26,7 +27,7 @@ public class CarStuff : MonoBehaviour {
         if(path.Count != 0) {
 		    if (!free) {
                 if (forward)
-                    GoForward();
+                    tst();
                 else
                     GoBack();
 		    } else {
@@ -59,6 +60,34 @@ public class CarStuff : MonoBehaviour {
             int id = getIndexCity(path[crrPnt]);
             timeSpent += factory.graph.listNodes[id].time;
             print(factory.graph.listNodes[id].time);
+            crrPnt++;
+        }
+    }
+
+    void tst() {
+        if (crrPnt >= path.Count) {
+            free = true;
+            print("Delivery");
+
+            return;
+        }
+
+        transform.Translate (0, 0, speed * Time.deltaTime);
+
+        int pathway = path[crrPnt].GetComponent<city>().chosenPathway;
+        Transform look = path[crrPnt].GetComponent<city>().paths[pathway];
+
+        transform.LookAt (look.GetChild(streetPnt));
+
+        if (Vector3.Distance(transform.position, look.GetChild(streetPnt).position) < 1f) {
+            streetPnt++;
+        }
+
+        if(streetPnt >= look.childCount) {
+            int id = getIndexCity(path[crrPnt]);
+            timeSpent += factory.graph.listNodes[id].time;
+
+            streetPnt = 0;
             crrPnt++;
         }
     }

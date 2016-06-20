@@ -64,7 +64,7 @@ public class Factory : MonoBehaviour {
 
 	void AddToPath(Transform pnt){
         int id = lastSelected();
-        bool canAdd = true;
+        int canAdd = 0;
         if (id != -1) {
             string index = "";
             if (pnt.name.IndexOf("(") != -1) {
@@ -77,7 +77,9 @@ public class Factory : MonoBehaviour {
             int next = int.Parse(index);
             canAdd = graph.IsAdjacent(id, next);
 
-            if (canAdd) {
+            if (canAdd != -1) {
+                selectedPath[selectedPath.Count - 1].GetComponent<city>().chosenPathway = canAdd;
+
                 Transform go = GameObject.Find("Map").transform;
                 for (int i = 0; i < graph.nodesSize; i++)
                     if(i != PlayerPrefs.GetInt("Destination"))
@@ -92,7 +94,7 @@ public class Factory : MonoBehaviour {
             }
         }
 
-        if (!selectedPath.Contains(pnt) && canAdd)
+        if (!selectedPath.Contains(pnt) && canAdd != -1)
             selectedPath.Add(pnt);
 	}
 
