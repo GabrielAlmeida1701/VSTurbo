@@ -16,7 +16,7 @@ public class CarStuff : MonoBehaviour {
     private int streetPnt;
     private float waitTime;
     private Factory factory;
-
+    
     void Start() {
         int indx = PlayerPrefs.GetInt("InitialCity");
         Transform go = GameObject.Find("Map").transform;
@@ -27,7 +27,7 @@ public class CarStuff : MonoBehaviour {
         if(path.Count != 0) {
 		    if (!free) {
                 if (forward)
-                    tst();
+                    GoForward();
                 else
                     GoBack();
 		    } else {
@@ -42,7 +42,6 @@ public class CarStuff : MonoBehaviour {
                 }
             }
         }
-
 	}
 
     void GoForward() {
@@ -79,9 +78,8 @@ public class CarStuff : MonoBehaviour {
 
         transform.LookAt (look.GetChild(streetPnt));
 
-        if (Vector3.Distance(transform.position, look.GetChild(streetPnt).position) < 1f) {
+        if (Vector3.Distance(transform.position, look.GetChild(streetPnt).position) < 1f)
             streetPnt++;
-        }
 
         if(streetPnt >= look.childCount) {
             int id = getIndexCity(path[crrPnt]);
@@ -91,7 +89,7 @@ public class CarStuff : MonoBehaviour {
             crrPnt++;
         }
     }
-
+    
     private int getIndexCity(Transform pnt) {
         string index = "";
         if (pnt.name.IndexOf("(") != -1) {
@@ -110,7 +108,7 @@ public class CarStuff : MonoBehaviour {
             path.Clear();
             factory.FinishJob();
             crrPnt = 0;
-
+	    GetTime();
             return;
         }
 
@@ -128,5 +126,20 @@ public class CarStuff : MonoBehaviour {
     public CarStuff SetFactory(Factory factory) {
         this.factory = factory;
         return this;
+    }
+    
+    void GetTime(){
+        string time = "time:{";
+        for (int i = 0; i < factory.graph.nodesSize; i++){
+            time += "[" + factory.graph.listNodes[i].time + ",";
+        }
+        time = time.Substring(0, time.Length - 2);
+        time += "}";
+
+        PlayerPrefs.SetString("Time", time);
+    }
+
+    void Load(){
+        string time = PlayerPrefs.GetString("Time");
     }
 }

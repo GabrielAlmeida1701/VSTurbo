@@ -115,23 +115,25 @@ public class Factory : MonoBehaviour {
 	}
 
     public void TakeJob() {
-        print("Job Started");
-        if(!selectedPath.Contains(frstCity))
-            selectedPath.Add(frstCity);
+        if (carsList[selectedCar].free) {
+            print("Job Started");
+            if(!selectedPath.Contains(frstCity))
+                selectedPath.Add(frstCity);
 
-        int indx = Random.Range(0, 18);
-        while(indx == PlayerPrefs.GetInt("InitialCity"))
-            indx = Random.Range(0, 18);
+            int indx = Random.Range(0, 18);
+            while(indx == PlayerPrefs.GetInt("InitialCity"))
+                indx = Random.Range(0, 18);
 
-        PlayerPrefs.SetInt("Destination", indx);
+            PlayerPrefs.SetInt("Destination", indx);
         
-        Transform go = GameObject.Find("Map").transform;
-        objective = go.GetChild(indx);
-        objective.GetComponent<Image>().sprite = destination;
+            Transform go = GameObject.Find("Map").transform;
+            objective = go.GetChild(indx);
+            objective.GetComponent<Image>().sprite = destination;
 
-        List<Edge> edges = graph.GetAdjacents(PlayerPrefs.GetInt("InitialCity"));
-        foreach(Edge ed in edges) {
-            go.GetChild(ed.adjacent.id).GetComponent<Image>().sprite = adjacent;
+            List<Edge> edges = graph.GetAdjacents(PlayerPrefs.GetInt("InitialCity"));
+            foreach(Edge ed in edges) {
+                go.GetChild(ed.adjacent.id).GetComponent<Image>().sprite = adjacent;
+            }
         }
     }
 
