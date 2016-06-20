@@ -81,7 +81,7 @@ public class CarStuff : MonoBehaviour {
             path.Clear();
             factory.FinishJob();
             crrPnt = 0;
-
+	    GetTime();
             return;
         }
 
@@ -99,5 +99,22 @@ public class CarStuff : MonoBehaviour {
     public CarStuff SetFactory(Factory factory) {
         this.factory = factory;
         return this;
+    }
+    
+    void GetTime(){
+        time = "time:{";
+        for (int i = 0; i < factory.graph.nodesSize; i++){
+            time += "[" + factory.graph.listNodes[i].time + ",";
+        }
+        time += "}";
+    Save(time);
+    }
+
+    void Save(string time){
+        PlayerPrefs.SetString("Time", time);
+    }
+
+    void Load(){
+        time = PlayerPrefs.GetString("Time");
     }
 }
