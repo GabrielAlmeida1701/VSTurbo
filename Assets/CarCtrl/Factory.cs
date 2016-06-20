@@ -26,12 +26,12 @@ public class Factory : MonoBehaviour {
         int indx = PlayerPrefs.GetInt("InitialCity");
         Transform go = GameObject.Find("Map").transform;
         frstCity = go.GetChild(indx);
+
+        graph = GetComponent<MainGraph>().InitializeGraph();
     }
 
     void Start(){
 		SetCarsList();
-
-        graph = GetComponent<MainGraph>().InitializeGraph();
 
 		int qnt = carsList.Count;
 		GameObject originalPos = GameObject.Find ("BntsPosition");
