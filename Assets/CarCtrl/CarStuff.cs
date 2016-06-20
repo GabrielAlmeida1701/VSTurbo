@@ -14,7 +14,7 @@ public class CarStuff : MonoBehaviour {
 
     private int crrPnt;
     private int streetPnt;
-    private float waitTime;
+    public float waitTime;
     private Factory factory;
     
     void Start() {
@@ -31,7 +31,7 @@ public class CarStuff : MonoBehaviour {
                 else
                     GoBack();
 		    } else {
-                if (crrPnt >= path.Count) {
+                if (crrPnt >= path.Count-1) {
                     waitTime += Time.deltaTime;
                     if(waitTime >= 5) {
                         forward = false;
@@ -44,7 +44,7 @@ public class CarStuff : MonoBehaviour {
         }
 	}
 
-    void GoForward() {
+    void OLD_GoForward() {
         if (crrPnt >= path.Count) {
             free = true;
             print("Delivery");
@@ -63,8 +63,8 @@ public class CarStuff : MonoBehaviour {
         }
     }
 
-    void tst() {
-        if (crrPnt >= path.Count) {
+    void GoForward() {
+        if (crrPnt >= path.Count-1) {
             free = true;
             print("Delivery");
 
@@ -90,6 +90,35 @@ public class CarStuff : MonoBehaviour {
         }
     }
     
+    void tst() {
+        if (crrPnt < 0) {
+            free = true;
+            path.Clear();
+            factory.FinishJob();
+            crrPnt = 0;
+	        GetTime();
+
+            return;
+        }
+
+        int pathway = path[crrPnt].GetComponent<city>().chosenPathway;
+        Transform look = path[crrPnt].GetComponent<city>().paths[pathway];
+
+        transform.Translate (0, 0, speed * Time.deltaTime);
+		transform.LookAt (path [crrPnt]);
+
+        if (Vector3.Distance(transform.position, look.GetChild(streetPnt).position) < 1f)
+            streetPnt--;
+
+        if(streetPnt < 0) {
+            int id = getIndexCity(path[crrPnt]);
+            timeSpent += factory.graph.listNodes[id].time;
+
+            streetPnt = look.childCount-1;
+            crrPnt--;
+        }
+    }
+
     private int getIndexCity(Transform pnt) {
         string index = "";
         if (pnt.name.IndexOf("(") != -1) {

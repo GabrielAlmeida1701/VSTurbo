@@ -21,7 +21,7 @@ public class Factory : MonoBehaviour {
     private Transform objective;
 
     void Awake() {
-        PlayerPrefs.SetInt("InitialCity", 16);
+        PlayerPrefs.SetInt("InitialCity", 17);
 
         int indx = PlayerPrefs.GetInt("InitialCity");
         Transform go = GameObject.Find("Map").transform;
@@ -94,7 +94,7 @@ public class Factory : MonoBehaviour {
             }
         }
 
-        if (!selectedPath.Contains(pnt) && canAdd != -1)
+        if (!selectedPath.Contains(pnt) && canAdd != -1 && !selectedPath.Contains(objective))
             selectedPath.Add(pnt);
 	}
 
