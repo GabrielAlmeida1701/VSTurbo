@@ -8,9 +8,10 @@ public class Factory : MonoBehaviour {
 	List<CarStuff> carsList = new List<CarStuff>();
 	List<Transform> selectedPath = new List<Transform> ();
 
-    public Sprite normal, adjacent, destination;
+    public Sprite normal, adjacent, destination, target_adjacent;
+    public GameObject confirmBnt;
 
-	public int selectedCar;
+    public int selectedCar;
 	public GameObject bnt;
     public Graph graph;
 
@@ -81,21 +82,26 @@ public class Factory : MonoBehaviour {
                 selectedPath[selectedPath.Count - 1].GetComponent<city>().chosenPathway = canAdd;
 
                 Transform go = GameObject.Find("Map").transform;
-                for (int i = 0; i < graph.nodesSize; i++)
-                    if(i != PlayerPrefs.GetInt("Destination"))
+                for (int i = 0; i < graph.nodesSize; i++) {
+                    if (i != PlayerPrefs.GetInt("Destination"))
                         go.GetChild(i).GetComponent<Image>().sprite = normal;
+                }
 
                 objective.GetComponent<Image>().sprite = destination;
 
                 List<Edge> edges = graph.GetAdjacents(next);
                 foreach(Edge ed in edges) {
                     go.GetChild(ed.adjacent.id).GetComponent<Image>().sprite = adjacent;
+                    if(ed.adjacent.id == PlayerPrefs.GetInt("Destination"))
+                        objective.GetComponent<Image>().sprite = target_adjacent;
                 }
             }
         }
 
         if (!selectedPath.Contains(pnt) && canAdd != -1 && !selectedPath.Contains(objective))
             selectedPath.Add(pnt);
+
+        confirmBnt.SetActive(selectedPath.Contains(objective));
 	}
 
 	private void SetCarsList(){
@@ -133,6 +139,8 @@ public class Factory : MonoBehaviour {
             List<Edge> edges = graph.GetAdjacents(PlayerPrefs.GetInt("InitialCity"));
             foreach(Edge ed in edges) {
                 go.GetChild(ed.adjacent.id).GetComponent<Image>().sprite = adjacent;
+                if (ed.adjacent.id == PlayerPrefs.GetInt("Destination"))
+                    objective.GetComponent<Image>().sprite = target_adjacent;
             }
         }
     }
