@@ -15,7 +15,6 @@ public class Tutorial : MonoBehaviour {
 	GameObject map, slcFrstCity;
 
 	void Start () {
-		PlayerPrefs.DeleteAll ();
 		if (!PlayerPrefs.HasKey ("InitialCity"))
 			StartTutorial ();
 		else
@@ -23,9 +22,10 @@ public class Tutorial : MonoBehaviour {
 	}
 
 	void Update(){
-		if(crrTuts >= tuts.Length)
+		if(crrTuts >= tuts.Length) {
+            Time.timeScale = 1;
 			Destroy (GameObject.Find ("Canvas_Tutorial"));
-		else
+		} else
 			bg.sprite = tuts [crrTuts];
 
 		if (crrStopPoint < stopPoints.Length) {
@@ -48,6 +48,16 @@ public class Tutorial : MonoBehaviour {
 					crrStopPoint++;
 				}
 			}
+
+            if(stopPoints[crrStopPoint] == 7) {
+                Factory f = GameObject.Find("Factory").GetComponent<Factory>();
+                if (!f.carsList[f.selectedCar].forward) {
+                    Time.timeScale = 0;
+                    bg.gameObject.SetActive(true);
+                    crrTuts++;
+                    crrStopPoint++;
+                }
+            }
 		}
 	}
 
@@ -81,6 +91,7 @@ public class Tutorial : MonoBehaviour {
 
 		Destroy (GameObject.Find ("FrstCityMap"));
 		PlayerPrefs.SetInt("InitialCity", int.Parse(index));
+        PlayerPrefs.SetInt("Cars_Ammount", 1);
 		crrTuts++;
 		crrStopPoint++;
 		bg.gameObject.SetActive (true);
@@ -90,10 +101,28 @@ public class Tutorial : MonoBehaviour {
 
 	public void Next(){
 		if (crrStopPoint < stopPoints.Length) {
-			if (crrTuts != stopPoints [crrStopPoint])
-				crrTuts++;
-			else
-				bg.gameObject.SetActive (false);
+            if (crrTuts != stopPoints[crrStopPoint])
+                crrTuts++;
+            else {
+                bg.gameObject.SetActive(false);
+
+                if (stopPoints[crrStopPoint] == 3) {
+                    Factory f = GameObject.Find("Factory").GetComponent<Factory>();
+                    Vector3 pos = new Vector3(0, 30, 0);
+                    GameObject go = Instantiate(f.job, pos, Quaternion.identity) as GameObject;
+
+                    go.transform.FindChild("Text").GetComponent<Text>().text = "Job 1";
+                    go.transform.SetParent(GameObject.Find("jobs").transform);
+                    go.transform.localScale = Vector3.one;
+                    go.transform.localPosition = pos;
+                    go.name = "Job 1";
+
+                    go.transform.FindChild("cancelJob")
+                        .GetComponent<Button>().onClick.AddListener(() => f.CancelJob(go));
+
+                    go.GetComponent<Button>().onClick.AddListener(() => f.TakeJob(go));
+                }
+            }
 		} else
 			crrTuts++;
 	}

@@ -5,6 +5,8 @@ public class CarStuff : MonoBehaviour {
 
 	public List<Transform> path = new List<Transform>();
 
+    public GameObject loadIcon;
+
 	public float GasTank;
 	public float timeSpent;
 	public float speed;
@@ -16,6 +18,8 @@ public class CarStuff : MonoBehaviour {
     private int streetPnt;
     public float waitTime;
     private Factory factory;
+
+    public string job;
     
 	public CarStuff StartCar() {
         int indx = PlayerPrefs.GetInt("InitialCity");
@@ -34,40 +38,34 @@ public class CarStuff : MonoBehaviour {
 		    } else {
                 if (crrPnt >= path.Count-1) {
                     waitTime += Time.deltaTime;
-                    if(waitTime >= 5) {
+
+                    Vector3 scl = loadIconGO.transform.FindChild("bg").localScale;
+                    scl.x = waitTime / 5;
+                    loadIconGO.transform.FindChild("bg").localScale = scl;
+
+                    if (waitTime >= 5) {
                         forward = false;
                         free = false;
+                        Destroy(loadIconGO);
                         crrPnt--;
                         waitTime = 0;
                     }
+                } else {
+                    int indx = PlayerPrefs.GetInt("InitialCity");
+                    Transform go = GameObject.Find("Map").transform;
+                    transform.position = go.GetChild(indx).position;
                 }
             }
         }
 	}
 
-    void OLD_GoForward() {
-        if (crrPnt >= path.Count) {
-            free = true;
-            print("Delivery");
-
-            return;
-        }
-
-        transform.Translate (0, 0, speed * Time.deltaTime);
-		transform.LookAt (path [crrPnt]);
-
-        if (Vector3.Distance(transform.position, path[crrPnt].position) < 1f) {
-            int id = getIndexCity(path[crrPnt]);
-            timeSpent += factory.graph.listNodes[id].time;
-            print(factory.graph.listNodes[id].time);
-            crrPnt++;
-        }
-    }
-
+    private GameObject loadIconGO;
     void GoForward() {
         if (crrPnt >= path.Count-1) {
             free = true;
-            print("Delivery");
+            loadIconGO = Instantiate(loadIcon, path[crrPnt].position, loadIcon.transform.rotation) as GameObject;
+            loadIconGO.transform.SetParent(GameObject.Find("CanvasUI").transform);
+            loadIconGO.transform.localScale = Vector3.one;
 
             return;
         }

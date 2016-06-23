@@ -5,14 +5,15 @@ using Assets;
 
 public class Factory : MonoBehaviour {
 
-	List<CarStuff> carsList = new List<CarStuff>();
+	public List<CarStuff> carsList = new List<CarStuff>();
 	public List<Transform> selectedPath = new List<Transform> ();
 
-    public Sprite normal, adjacent, destination, target_adjacent;
+    public Sprite normal, adjacent, destination, target_adjacent, frstCity_icon;
     public GameObject confirmBnt;
 
     public int selectedCar;
 	public GameObject bnt;
+    public GameObject job;
     public Graph graph;
 
     public float totalMoney;
@@ -20,15 +21,30 @@ public class Factory : MonoBehaviour {
 
     private Transform frstCity;
     public Transform objective;
+    public GameObject carModel;
+
+    private int jobsCount;
 
     void Awake() {
-        PlayerPrefs.SetInt("InitialCity", 17);
+        if (PlayerPrefs.HasKey("InitialCity")) {
+            SetInitialCity();
 
-		if (PlayerPrefs.HasKey ("InitialCity")) {
-			int indx = PlayerPrefs.GetInt ("InitialCity");
-			Transform go = GameObject.Find ("Map").transform;
-			frstCity = go.GetChild (indx);
-		}
+            jobsCount = Random.Range(1, 5);
+            for (int i = 0; i < jobsCount; i++) {
+                Vector3 pos = new Vector3(0, 30 - (i * 30), 0);
+                GameObject go = Instantiate(job, pos, Quaternion.identity) as GameObject;
+                go.transform.FindChild("Text").GetComponent<Text>().text = "Job " + (i + 1);
+                go.transform.SetParent(GameObject.Find("jobs").transform);
+                go.transform.localScale = Vector3.one;
+                go.transform.localPosition = pos;
+                go.name = "Job " + (i + 1);
+
+                go.transform.FindChild("cancelJob")
+                    .GetComponent<Button>().onClick.AddListener(() => CancelJob(go));
+
+                go.GetComponent<Button>().onClick.AddListener(() => TakeJob(go));
+            }
+        }
 
         graph = GetComponent<MainGraph>().InitializeGraph();
     }
@@ -38,7 +54,11 @@ public class Factory : MonoBehaviour {
 		Transform go = GameObject.Find ("Map").transform;
 		frstCity = go.GetChild (indx);
 
-		SetCarsBnts();
+        int carAmmount = PlayerPrefs.GetInt("Cars_Ammount");
+        for (int i = 0; i < carAmmount; i++)
+            Instantiate(carModel, Vector3.zero, carModel.transform.rotation);
+
+        SetCarsBnts();
 	}
 
     void Start(){
@@ -53,10 +73,13 @@ public class Factory : MonoBehaviour {
 		int qnt = carsList.Count;
 		GameObject originalPos = GameObject.Find ("BntsPosition");
 
+        for(int j=0; j<originalPos.transform.childCount; j++)
+            Destroy(originalPos.transform.GetChild(j).gameObject);
+
 		for (int i = 0; i < qnt; i++) {
 			GameObject go = Instantiate (bnt, Vector3.zero, Quaternion.identity) as GameObject;
 
-			go.transform.parent = originalPos.transform;
+			go.transform.SetParent(originalPos.transform);
 			go.transform.localPosition = new Vector3 (0, i*-41, 0);
 			go.transform.localRotation = Quaternion.identity;
 			go.transform.localScale = Vector3.one;
@@ -109,6 +132,8 @@ public class Factory : MonoBehaviour {
                     if(ed.adjacent.id == PlayerPrefs.GetInt("Destination"))
                         objective.GetComponent<Image>().sprite = target_adjacent;
                 }
+
+                frstCity.GetComponent<Image>().sprite = frstCity_icon;
             }
         }
 
@@ -128,16 +153,22 @@ public class Factory : MonoBehaviour {
 		if (selectedPath.Contains (objective) && carsList[selectedCar].free) {
             carsList[selectedCar].forward = true;
             carsList[selectedCar].free = false;
+            makingPath = false;
+
             CloneList();
 			selectedPath.Clear ();
 		} else
 			print ("selecione o caminho até o objetivo final");
 	}
 
-    public void TakeJob() {
-        if (carsList[selectedCar].free) {
-            print("Job Started");
-            if(!selectedPath.Contains(frstCity))
+    bool makingPath;
+    string jobName;
+    public void TakeJob(GameObject jobGO) {
+        if (carsList[selectedCar].free && !makingPath) {
+            makingPath = true;
+            jobName = jobGO.name;
+
+            if (!selectedPath.Contains(frstCity))
                 selectedPath.Add(frstCity);
 
             int indx = Random.Range(0, 18);
@@ -156,7 +187,27 @@ public class Factory : MonoBehaviour {
                 if (ed.adjacent.id == PlayerPrefs.GetInt("Destination"))
                     objective.GetComponent<Image>().sprite = target_adjacent;
             }
+
+            frstCity.GetComponent<Image>().sprite = frstCity_icon;
         }
+    }
+
+    public void CancelJob(GameObject go) {
+        foreach(CarStuff cs in carsList) {
+            if (cs.job == jobName)
+                cs.free = true;
+        }
+        jobsCount--;
+        print(jobsCount);
+        Transform j = GameObject.Find("jobs").transform;
+        for(int i=0; i<jobsCount; i++) {
+            Vector3 pos = new Vector3(0, 30 - (i * 30), 0);
+            j.GetChild(i).localPosition = pos;
+        }
+
+        makingPath = false;
+
+        Destroy(go);
     }
 
     public void FinishJob() {
