@@ -111,11 +111,18 @@ public class Tutorial : MonoBehaviour {
                     Vector3 pos = new Vector3(0, 30, 0);
                     GameObject go = Instantiate(f.job, pos, Quaternion.identity) as GameObject;
 
-                    go.transform.FindChild("Text").GetComponent<Text>().text = "Job 1";
+                    int indx = Random.Range(0, 18);
+                    while (indx == PlayerPrefs.GetInt("InitialCity"))
+                        indx = Random.Range(0, 18);
+
+                    float m = (Random.value * 9999);
+                    go.transform.FindChild("Text")
+                        .GetComponent<Text>()
+                        .text = "Job 1" + ": " + (m.ToString("c2"));
                     go.transform.SetParent(GameObject.Find("jobs").transform);
                     go.transform.localScale = Vector3.one;
                     go.transform.localPosition = pos;
-                    go.name = "Job 1";
+                    go.name = indx + "Job 1" + "-" + m;
 
                     go.transform.FindChild("cancelJob")
                         .GetComponent<Button>().onClick.AddListener(() => f.CancelJob(go));

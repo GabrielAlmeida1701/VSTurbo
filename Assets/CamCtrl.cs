@@ -16,7 +16,11 @@ public class CamCtrl : MonoBehaviour {
         Camera.main.orthographicSize = slider.value;
 
         if (Input.GetMouseButton(0)) {
-            transform.Translate(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"), 0);
+            transform.Translate(
+                Input.GetAxis("Mouse X") * Time.deltaTime * 5,
+                Input.GetAxis("Mouse Y") * Time.deltaTime * 5,
+                0
+            );
         }
 	}
 }

@@ -16,8 +16,8 @@ public class Factory : MonoBehaviour {
     public GameObject job;
     public Graph graph;
 
-    public float totalMoney;
-    public float totalXP;
+    public float totalMoney = 100.00f;
+    public float totalGas = 50.00f;
 
     private Transform frstCity;
     public Transform objective;
@@ -31,13 +31,21 @@ public class Factory : MonoBehaviour {
 
             jobsCount = Random.Range(1, 5);
             for (int i = 0; i < jobsCount; i++) {
+                float m = (Random.value * 9999);
                 Vector3 pos = new Vector3(0, 30 - (i * 30), 0);
                 GameObject go = Instantiate(job, pos, Quaternion.identity) as GameObject;
-                go.transform.FindChild("Text").GetComponent<Text>().text = "Job " + (i + 1);
+
+                int indx = Random.Range(0, 18);
+                while (indx == PlayerPrefs.GetInt("InitialCity"))
+                    indx = Random.Range(0, 18);
+
+                go.transform.FindChild("Text")
+                    .GetComponent<Text>()
+                    .text = "Job " + (i + 1) + ": " + (m.ToString("c2"));
                 go.transform.SetParent(GameObject.Find("jobs").transform);
                 go.transform.localScale = Vector3.one;
                 go.transform.localPosition = pos;
-                go.name = "Job " + (i + 1);
+                go.name = indx + "Job " + (i + 1)+"-"+m;
 
                 go.transform.FindChild("cancelJob")
                     .GetComponent<Button>().onClick.AddListener(() => CancelJob(go));
@@ -59,13 +67,8 @@ public class Factory : MonoBehaviour {
             Instantiate(carModel, Vector3.zero, carModel.transform.rotation);
 
         SetCarsBnts();
-	}
-
-    void Start(){
-		SetCarsBnts ();
-
-		SetBnts ();
-	}
+        SetBnts();
+    }
 
 	void SetCarsBnts(){
 		SetCarsList();
@@ -103,6 +106,7 @@ public class Factory : MonoBehaviour {
 	void AddToPath(Transform pnt){
         int id = lastSelected();
         int canAdd = 0;
+        makingPath = true;
         if (id != -1) {
             string index = "";
             if (pnt.name.IndexOf("(") != -1) {
@@ -148,11 +152,12 @@ public class Factory : MonoBehaviour {
 		for (int i = 0; i < cars.Length; i++)
 			carsList.Add (cars [i].GetComponent<CarStuff> ().SetFactory(this).StartCar());
 	}
-
+    
 	public void ConfirmPath(){
 		if (selectedPath.Contains (objective) && carsList[selectedCar].free) {
             carsList[selectedCar].forward = true;
             carsList[selectedCar].free = false;
+            carsList[selectedCar].job = jobName;
             makingPath = false;
 
             CloneList();
@@ -165,19 +170,21 @@ public class Factory : MonoBehaviour {
     string jobName;
     public void TakeJob(GameObject jobGO) {
         if (carsList[selectedCar].free && !makingPath) {
-            makingPath = true;
             jobName = jobGO.name;
 
             if (!selectedPath.Contains(frstCity))
                 selectedPath.Add(frstCity);
 
-            int indx = Random.Range(0, 18);
-            while(indx == PlayerPrefs.GetInt("InitialCity"))
-                indx = Random.Range(0, 18);
+            string v = jobGO.name;
+            string parse = v.Substring(0, v.IndexOf("J"));
+            int indx = int.Parse(parse);
 
             PlayerPrefs.SetInt("Destination", indx);
         
             Transform go = GameObject.Find("Map").transform;
+            for (int i = 0; i < graph.nodesSize; i++)
+                go.GetChild(i).GetComponent<Image>().sprite = normal;
+
             objective = go.GetChild(indx);
             objective.GetComponent<Image>().sprite = destination;
 
@@ -193,12 +200,16 @@ public class Factory : MonoBehaviour {
     }
 
     public void CancelJob(GameObject go) {
-        foreach(CarStuff cs in carsList) {
+        Transform tr = GameObject.Find("Map").transform;
+        for (int i = 0; i < graph.nodesSize; i++)
+            tr.GetChild(i).GetComponent<Image>().sprite = normal;
+
+        foreach (CarStuff cs in carsList) {
             if (cs.job == jobName)
                 cs.free = true;
         }
         jobsCount--;
-        print(jobsCount);
+
         Transform j = GameObject.Find("jobs").transform;
         for(int i=0; i<jobsCount; i++) {
             Vector3 pos = new Vector3(0, 30 - (i * 30), 0);
@@ -210,18 +221,60 @@ public class Factory : MonoBehaviour {
         Destroy(go);
     }
 
-    public void FinishJob() {
-        print("End of Job");
+    public void FinishJob(string job) {
+        string val = job.Substring(job.IndexOf("-") + 1);
+        Destroy(GameObject.Find(job));
+        jobsCount--;
+        Transform j = GameObject.Find("jobs").transform;
+        for (int i = 0; i < jobsCount; i++) {
+            Vector3 pos = new Vector3(0, 30 - (i * 30), 0);
+            j.GetChild(i).localPosition = pos;
+        }
+
         selectedPath.Add(frstCity);
 
         Transform go = GameObject.Find("Map").transform;
         for (int i = 0; i < graph.nodesSize; i++)
             go.GetChild(i).GetComponent<Image>().sprite = normal;
 
-        totalMoney += Random.value * 2500;
-        totalXP += Random.Range(100, 200);
+        totalMoney += float.Parse(val);
+
+        totalGas = 0;
+        for (int c = 0; c < carsList.Count; c++)
+            totalGas += carsList[c].GasTank;
 
         objective = null;
+    }
+
+    public void RefreshJobList() {
+        Transform jobsTrs = GameObject.Find("jobs").transform;
+
+        for (int k=0; k< jobsTrs.childCount; k++)
+            Destroy(jobsTrs.GetChild(k).gameObject);
+
+        jobsCount = Random.Range(1, 5);
+        for (int i = 0; i < jobsCount; i++) {
+            float m = (Random.value * 9999);
+            Vector3 pos = new Vector3(0, 30 - (i * 30), 0);
+            GameObject go = Instantiate(job, pos, Quaternion.identity) as GameObject;
+
+            int indx = Random.Range(0, 18);
+            while (indx == PlayerPrefs.GetInt("InitialCity"))
+                indx = Random.Range(0, 18);
+
+            go.transform.FindChild("Text")
+                .GetComponent<Text>()
+                .text = "Job " + (i + 1) + ": " + (m.ToString("c2"));
+            go.transform.SetParent(GameObject.Find("jobs").transform);
+            go.transform.localScale = Vector3.one;
+            go.transform.localPosition = pos;
+            go.name = indx + "Job " + (i + 1) + "-" + m;
+
+            go.transform.FindChild("cancelJob")
+                .GetComponent<Button>().onClick.AddListener(() => CancelJob(go));
+
+            go.GetComponent<Button>().onClick.AddListener(() => TakeJob(go));
+        }
     }
 
     private void CloneList() {
@@ -241,5 +294,13 @@ public class Factory : MonoBehaviour {
         }
 
         return -1;
+    }
+
+    void Update() {
+        Transform mny = GameObject.Find("Money").transform;
+        Transform gas = GameObject.Find("Gas").transform;
+
+        mny.GetChild(0).GetComponent<Text>().text = totalMoney.ToString("c2");
+        gas.GetChild(0).GetComponent<Text>().text = totalGas+" L";
     }
 }

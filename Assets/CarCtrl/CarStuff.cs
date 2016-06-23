@@ -83,6 +83,7 @@ public class CarStuff : MonoBehaviour {
         if(streetPnt >= look.childCount) {
             int id = getIndexCity(path[crrPnt]);
             timeSpent += factory.graph.listNodes[id].time;
+            GasTank -= factory.graph.listNodes[id].time * 0.8f;
 
             streetPnt = 0;
             crrPnt++;
@@ -93,7 +94,7 @@ public class CarStuff : MonoBehaviour {
         if (crrPnt < 0) {
             free = true;
             path.Clear();
-            factory.FinishJob();
+            factory.FinishJob(job);
             crrPnt = 0;
 	        GetTime();
 
@@ -134,9 +135,10 @@ public class CarStuff : MonoBehaviour {
         if (crrPnt < 0) {
             free = true;
             path.Clear();
-            factory.FinishJob();
+            factory.FinishJob(job);
             crrPnt = 0;
-	    GetTime();
+	        GetTime();
+
             return;
         }
 
@@ -146,7 +148,8 @@ public class CarStuff : MonoBehaviour {
         if (Vector3.Distance(transform.position, path[crrPnt].position) < 1f) {
             int id = getIndexCity(path[crrPnt]);
             timeSpent += factory.graph.listNodes[id].time;
-            print(factory.graph.listNodes[id].time);
+            GasTank -= factory.graph.listNodes[id].time * 0.7f;
+
             crrPnt--;
         }
     }
@@ -157,12 +160,12 @@ public class CarStuff : MonoBehaviour {
     }
     
     void GetTime(){
-        string time = "time:{";
+        string time = "time:[";
         for (int i = 0; i < factory.graph.nodesSize; i++){
-            time += "[" + factory.graph.listNodes[i].time + ",";
+            time += factory.graph.listNodes[i].time + ",";
         }
         time = time.Substring(0, time.Length - 2);
-        time += "}";
+        time += "]";
 
         PlayerPrefs.SetString("Time", time);
     }
