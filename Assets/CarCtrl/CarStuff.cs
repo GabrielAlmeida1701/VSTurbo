@@ -17,10 +17,11 @@ public class CarStuff : MonoBehaviour {
     public float waitTime;
     private Factory factory;
     
-    void Start() {
+	public CarStuff StartCar() {
         int indx = PlayerPrefs.GetInt("InitialCity");
         Transform go = GameObject.Find("Map").transform;
         transform.position = go.GetChild(indx).position;
+		return this;
     }
 
 	void Update(){
@@ -152,9 +153,9 @@ public class CarStuff : MonoBehaviour {
         }
     }
 
-    public CarStuff SetFactory(Factory factory) {
+	public CarStuff SetFactory(Factory factory) {
         this.factory = factory;
-        return this;
+		return this;
     }
     
     void GetTime(){

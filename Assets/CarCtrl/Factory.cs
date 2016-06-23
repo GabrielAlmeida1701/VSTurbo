@@ -6,7 +6,7 @@ using Assets;
 public class Factory : MonoBehaviour {
 
 	List<CarStuff> carsList = new List<CarStuff>();
-	List<Transform> selectedPath = new List<Transform> ();
+	public List<Transform> selectedPath = new List<Transform> ();
 
     public Sprite normal, adjacent, destination, target_adjacent;
     public GameObject confirmBnt;
@@ -19,19 +19,35 @@ public class Factory : MonoBehaviour {
     public float totalXP;
 
     private Transform frstCity;
-    private Transform objective;
+    public Transform objective;
 
     void Awake() {
         PlayerPrefs.SetInt("InitialCity", 17);
 
-        int indx = PlayerPrefs.GetInt("InitialCity");
-        Transform go = GameObject.Find("Map").transform;
-        frstCity = go.GetChild(indx);
+		if (PlayerPrefs.HasKey ("InitialCity")) {
+			int indx = PlayerPrefs.GetInt ("InitialCity");
+			Transform go = GameObject.Find ("Map").transform;
+			frstCity = go.GetChild (indx);
+		}
 
         graph = GetComponent<MainGraph>().InitializeGraph();
     }
 
+	public void SetInitialCity(){
+		int indx = PlayerPrefs.GetInt ("InitialCity");
+		Transform go = GameObject.Find ("Map").transform;
+		frstCity = go.GetChild (indx);
+
+		SetCarsBnts();
+	}
+
     void Start(){
+		SetCarsBnts ();
+
+		SetBnts ();
+	}
+
+	void SetCarsBnts(){
 		SetCarsList();
 
 		int qnt = carsList.Count;
@@ -49,8 +65,6 @@ public class Factory : MonoBehaviour {
 				selectedCar = i;
 			});
 		}
-
-		SetBnts ();
 	}
 
 	void SetBnts(){
@@ -107,7 +121,7 @@ public class Factory : MonoBehaviour {
 	private void SetCarsList(){
 		GameObject[] cars = GameObject.FindGameObjectsWithTag ("Player");
 		for (int i = 0; i < cars.Length; i++)
-			carsList.Add (cars [i].GetComponent<CarStuff> ().SetFactory(this));
+			carsList.Add (cars [i].GetComponent<CarStuff> ().SetFactory(this).StartCar());
 	}
 
 	public void ConfirmPath(){
