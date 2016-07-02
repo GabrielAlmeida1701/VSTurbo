@@ -17,7 +17,6 @@ public class Factory : MonoBehaviour {
     public Graph graph;
 
     public float totalMoney = 100.00f;
-    public float totalGas = 50.00f;
 
     private Transform frstCity;
     public Transform objective;
@@ -175,6 +174,8 @@ public class Factory : MonoBehaviour {
             if (!selectedPath.Contains(frstCity))
                 selectedPath.Add(frstCity);
 
+            EnableCitys(true);
+
             string v = jobGO.name;
             string parse = v.Substring(0, v.IndexOf("J"));
             int indx = int.Parse(parse);
@@ -238,11 +239,7 @@ public class Factory : MonoBehaviour {
             go.GetChild(i).GetComponent<Image>().sprite = normal;
 
         totalMoney += float.Parse(val);
-
-        totalGas = 0;
-        for (int c = 0; c < carsList.Count; c++)
-            totalGas += carsList[c].GasTank;
-
+        
         objective = null;
     }
 
@@ -277,6 +274,22 @@ public class Factory : MonoBehaviour {
         }
     }
 
+    public void RechargeTruck() {
+        float dif = carsList[selectedCar].gasTankMax - carsList[selectedCar].GasTank;
+
+        carsList[selectedCar].GasTank = carsList[selectedCar].gasTankMax;
+
+        totalMoney -= dif*3.7f;
+    }
+
+    public void EnableCitys(bool active) {
+        Transform go = GameObject.Find("Map").transform;
+        for (int i = 0; i < go.childCount; i++) {
+            Transform tr = go.GetChild(i);
+            tr.GetComponent<Button>().enabled = active;
+        }
+    }
+
     private void CloneList() {
         for (int i = 0; i < selectedPath.Count; i++)
             carsList[selectedCar].path.Add(selectedPath[i]);
@@ -301,6 +314,7 @@ public class Factory : MonoBehaviour {
         Transform gas = GameObject.Find("Gas").transform;
 
         mny.GetChild(0).GetComponent<Text>().text = totalMoney.ToString("c2");
-        gas.GetChild(0).GetComponent<Text>().text = totalGas+" L";
+        gas.GetChild(0).GetComponent<Text>().text = 
+            Mathf.Clamp(carsList[selectedCar].GasTank, 0, float.MaxValue).ToString("0.00") + " L";
     }
 }

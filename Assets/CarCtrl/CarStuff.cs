@@ -1,13 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System.Collections;
 
 public class CarStuff : MonoBehaviour {
 
 	public List<Transform> path = new List<Transform>();
 
     public GameObject loadIcon;
+    public GameObject lowGas;
 
-	public float GasTank;
+    public float gasTankMax = 50;
+    public float GasTank;
 	public float timeSpent;
 	public float speed;
 
@@ -25,16 +28,46 @@ public class CarStuff : MonoBehaviour {
         int indx = PlayerPrefs.GetInt("InitialCity");
         Transform go = GameObject.Find("Map").transform;
         transform.position = go.GetChild(indx).position;
+
+        lowGas = Instantiate(lowGas, transform.position, Quaternion.identity) as GameObject;
+        lowGas.SetActive(false);
+
 		return this;
+    }
+
+    float t;
+    Color cor = Color.red;
+    void ShowLowGas() {
+        lowGas.SetActive(true);
+        lowGas.transform.position = transform.position;
+        
+        t += Time.deltaTime;
+        if (t >= 1) {
+            if (cor == Color.red)
+                cor = Color.white;
+            else
+                cor = Color.red;
+
+            t = 0;
+        }
+
+        lowGas.transform.GetChild(0).GetComponent<SpriteRenderer>().color = cor;
     }
 
 	void Update(){
         if(path.Count != 0) {
 		    if (!free) {
-                if (forward)
-                    GoForward();
-                else
-                    GoBack();
+                if (forward) {
+                    if (GasTank > 0)
+                        GoForward();
+                    else
+                        ShowLowGas();
+                } else {
+                    if (GasTank > 0)
+                        GoBack();
+                    else
+                        ShowLowGas();
+                }
 		    } else {
                 if (crrPnt >= path.Count-1) {
                     waitTime += Time.deltaTime;
@@ -69,6 +102,8 @@ public class CarStuff : MonoBehaviour {
 
             return;
         }
+        
+        lowGas.SetActive(false);
 
         transform.Translate (0, 0, speed * Time.deltaTime);
 
@@ -141,6 +176,8 @@ public class CarStuff : MonoBehaviour {
 
             return;
         }
+        
+        lowGas.SetActive(false);
 
         transform.Translate (0, 0, speed * Time.deltaTime);
 		transform.LookAt (path [crrPnt]);
